@@ -206,11 +206,24 @@ class Naf {
 	/**
 	 * Get configuration entry
 	 *
-	 * @param string $name
+	 * @param string $name dot-separated section path
+     * @return mixed
 	 */
 	static function config($name)
 	{
-		return array_key_exists($name, self::$settings) ? self::$settings[$name] : null;
+        if (array_key_exists($name, self::$settings)) {
+            return self::$settings[$name];
+        }
+
+        $section = self::$settings;
+        foreach (explode('.', $name) as $section_name) {
+            if (! array_key_exists($section_name, $section)) {
+                return null;
+            }
+            $section = $section[$section_name];
+        }
+
+		return $section;
 	}
 	
 	static function errorHandler($errno, $errstr)
